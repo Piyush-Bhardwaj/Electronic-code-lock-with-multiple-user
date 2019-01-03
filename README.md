@@ -6,15 +6,12 @@ It uses embedded system with input from the keypad and the output can be unlocki
 This system is a Password based electronic Lock System using 8051 Microcontroller,
 wherein once the correct ID is entered and then the code or password is entered, the lock is opened 
 Again, for the next user the ID and poassword is required to enter.
-If the password is wrong, then lock would remain closed, and the access will not be granted.
 
-
-
-In this project, a 4×4 Matrix Keypad is used to enter the password.
+A 4×4 Matrix Keypad is used to enter the password,16x2 LCD is used for display,one Buzzer is used for security purpose,one motor or actuator is used.
 The password which is entered is compared with the predefined password.
 First the ID of the user is entered  if the ID is correct then it will ask you to enter the password.
 If the entered password is correct, then the system opens the lock or door by rotating motor and displays the status of lock on LCD.
-If the password is wrong, then the lock  remains closed and displays Access denied on LCD.
+If the password is wrong, then lock would remain closed, and the access will not be granted and the LCD will show access denied.
 Password can be entered 5 times and number of count left is displayed on the LCD.  
 
 #Operation
