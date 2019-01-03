@@ -1,0 +1,501 @@
+RS EQU P2.7
+RW EQU P2.6
+E  EQU P2.5
+ROW EQU P1
+COL EQU P3
+
+ORG 0000H 
+	
+MAIN:CLR P2.0
+CLR P2.1
+CLR P2.3
+MOV TMOD,#00100001B
+MOV TH1,#253D
+MOV R1,#50H
+MOV R0,#70H
+
+SETB TR1
+ACALL LCD_INIT
+     
+     MOV DPTR,#TEXT1
+     ACALL SEND
+     ACALL LINE2
+     MOV DPTR,#TEXT2
+     CLR P2.0
+     ACALL SEND
+     ACALL DELAY1
+     ACALL DELAY1
+	   MOV R2,#6
+ 
+TRY_AGAIN:CLR P2.0
+          CLR P2.1
+	        CLR P2.3
+          
+ACALL CLRSCR
+ACALL LINE1
+DJNZ R2,CHECK1
+
+
+ACALL CLRSCR 
+ACALL LINE1
+MOV DPTR,#TEXT_F3
+
+ACALL SEND
+ACALL DELAY1
+SETB P2.3
+ACALL DELAY4
+CLR P2.3
+LT1:SJMP LT1
+
+CHECK1:ACALL CLRSCR
+	   ACALL LINE1
+	   MOV DPTR,#TRIAL
+	   ACALL SEND
+	   ACALL LINE2
+	   ACALL DELAY1
+	   MOV A,#30H
+	   ADD A,R2
+	   ACALL DATA_WRITE
+	   ACALL DELAY1
+	   ACALL DELAY2
+	   ACALL DELAY3
+	  
+     ACALL CLRSCR
+	   ACALL LINE1
+	   MOV 50H,#00
+	   MOV 51H,#00
+	   MOV 52H,#00
+     MOV DPTR,#IPMSG1 
+     ACALL SEND
+	   ACALL LINE2
+	   MOV DPTR ,#ENTER1
+	   ACALL SEND
+	   ACALL DELAY1
+	   ACALL DELAY2
+	   ACALL CLRSCR
+	   ACALL LINE1
+	   MOV DPTR ,#USE
+	   ACALL SEND 
+	   ACALL LINE2
+     LJMP AGAIN
+	   
+TRY_AGAIN1:ACALL READ_KEYPRESS
+     
+
+
+LCD_INIT:MOV A,#38H
+         ACALL CMD_WRITE
+		     ACALL DELAY3
+		     MOV A,#0EH
+         ACALL CMD_WRITE
+		     ACALL DELAY3
+		     MOV A,#01H
+         ACALL CMD_WRITE
+		     ACALL DELAY3
+		     MOV A,#06H
+         ACALL CMD_WRITE
+		     ACALL DELAY3
+		     MOV A,#80H
+         ACALL CMD_WRITE
+		     ACALL DELAY3
+		     RET
+
+SEND:CLR A
+     MOVC A,@A+DPTR
+	   ACALL DATA_WRITE
+	   ACALL DELAY1
+	   INC DPTR
+	   JZ EXITT
+	   SJMP SEND
+EXITT:RET
+		 
+LINE2:MOV A,#0C0H 
+    ACALL CMD_WRITE
+    RET   
+    
+LINE1: MOV A,#80H    
+      ACALL CMD_WRITE
+      RET
+
+CLRSCR: MOV A,#01H
+        ACALL CMD_WRITE
+        RET
+
+CMD_WRITE: MOV P0,A
+           CLR RS
+           CLR RW
+           SETB E
+           CLR E
+           ACALL DELAY3
+           RET
+
+DATA_WRITE:MOV P0,A
+           SETB RS
+           CLR RW
+           SETB E
+           CLR E
+           ACALL DELAY3
+           RET
+	
+DELAY3:MOV R4,#100
+    L2:MOV R5,#255
+	  L1:DJNZ R5,L1
+	     DJNZ R4,L2
+	     RET
+	   
+DELAY4:MOV R6,#50
+   LW3:MOV R4,#255
+   LW2:MOV R5,#255
+	 LW1:DJNZ R5,LW1
+	     DJNZ R4,LW2
+	     DJNZ  R6,LW3
+	     RET
+     
+DELAY1:MOV R3,#46D
+BACK:  MOV TH0,#0FDH   
+       MOV TL0,#00000000B   
+       SETB TR0             
+HERE1: JNB TF0,HERE1         
+       CLR TR0             
+       CLR TF0             
+       DJNZ R3,BACK
+       RET
+       
+DELAY2: MOV R3,#250D
+BACK2:   MOV TH0,#0F8H 
+        MOV TL0,#0F1H 
+        SETB TR0 
+HERE2:  JNB TF0,HERE2 
+        CLR TR0 
+        CLR TF0 
+        DJNZ R3,BACK2
+		
+        RET       
+
+READ_KEYPRESS:nop
+
+DJNZ R2,CHECK
+
+ACALL CLRSCR 
+ACALL LINE1
+MOV DPTR,#TEXT_F3
+ACALL SEND
+ACALL DELAY1
+SETB P2.3
+ACALL DELAY4
+CLR P2.3
+LL1:SJMP LL1
+
+CHECK:ACALL CLRSCR
+	   ACALL LINE1
+	   MOV DPTR,#TRIAL
+	   ACALL SEND
+	   ACALL LINE2
+	   ACALL DELAY1
+	   MOV A,#30H
+	   ADD A,R2
+	   ACALL DATA_WRITE
+	   ACALL DELAY1
+	   ACALL DELAY2
+
+ACALL CLRSCR
+ACALL LINE1
+
+MOV DPTR,#IPMSG  
+ACALL SEND
+ACALL LINE2
+	   MOV DPTR ,#ENTER2
+	   ACALL SEND
+	   ACALL DELAY1
+	   ACALL DELAY2
+	   ACALL CLRSCR
+	   ACALL LINE1
+	   MOV DPTR ,#USE1
+	   ACALL SEND 
+	   ACALL LINE2
+     MOV R0,#70H
+AGAIN:MOV ROW,#00H
+      MOV A,COL
+      ANL A,#0FH
+      CJNE A,#0FH,JUMP1
+      SJMP AGAIN
+JUMP1: ACALL DELAY
+      MOV A,COL
+      ANL A,#0FH
+      CJNE A,#0FH,GO_KEY
+      ACALL DELAY
+DELAY:MOV R6,#255
+LABEL2:MOV R7,#8
+LABEL1:DJNZ R7,LABEL1
+	     DJNZ R6,LABEL2
+       RET
+	
+GO_KEY:LJMP KEY_SCAN
+SJMP AGAIN	
+RET
+
+  CHECK_PASSWORD:ACALL CLRSCR
+                 MOV DPTR,#CHKMSG
+                 ACALL SEND
+                 ACALL DELAY1
+                MOV R3,#5d
+                MOV R0,#70h
+                MOV DPTR,#PASSW 
+                RPTT:CLR A
+                MOVC A,@A+DPTR
+                XRL A,@R0
+                JNZ FL
+                INC R0
+                INC DPTR
+                DJNZ R3,RPTT
+                ACALL CLRSCR
+                ACALL LINE1
+                MOV DPTR,#TEXT_S1
+                ACALL SEND
+                ACALL LINE2
+                ACALL DELAY1
+                MOV DPTR,#TEXT_S2
+                ACALL SEND
+                ACALL DELAY1
+                SETB P2.0
+                ACALL DELAY4
+                CLR P2.0
+                ACALL DELAY1
+                ACALL DELAY2
+                SETB P2.1
+                ACALL DELAY4
+                CLR P2.1
+                LJMP MAIN
+
+                FL:MOV R3,#5d
+                MOV R0,#70h
+                MOV DPTR,#PASSW1
+                RPTT1:CLR A
+                MOVC A,@A+DPTR
+                XRL A,@R0
+                JNZ FL1
+
+                INC R0
+                INC DPTR
+                DJNZ R3,RPTT1
+                ACALL CLRSCR
+                ACALL LINE1
+                MOV DPTR,#TEXT_S1
+                ACALL SEND
+                ACALL LINE2
+                ACALL DELAY1
+                MOV DPTR,#TEXT_S2
+                ACALL SEND
+                ACALL DELAY1
+                SETB P2.0
+                ACALL DELAY4
+                CLR P2.0
+                ACALL DELAY1
+                ACALL DELAY2
+                SETB P2.1
+                ACALL DELAY4
+                CLR P2.1
+                LJMP MAIN
+
+
+                FL1:MOV R3,#5d
+                MOV R0,#70h
+                MOV DPTR,#PASSW2
+                RPTT2:CLR A
+                MOVC A,@A+DPTR
+                XRL A,@R0
+                JNZ FL2
+
+                INC R0
+                INC DPTR
+                DJNZ R3,RPTT2
+                ACALL CLRSCR
+                ACALL LINE1
+                MOV DPTR,#TEXT_S1
+                ACALL SEND
+                ACALL LINE2
+                ACALL DELAY1
+
+
+                MOV DPTR,#TEXT_S2
+                ACALL SEND
+                ACALL DELAY1
+                SETB P2.0
+                ACALL DELAY4
+                CLR P2.0
+                ACALL DELAY1
+                ACALL DELAY2
+                SETB P2.1
+                ACALL DELAY4
+                CLR P2.1
+                LJMP MAIN
+
+                FL2:ACALL CLRSCR 
+                ACALL LINE1
+                MOV DPTR,#TEXT_F1
+                ACALL SEND
+                ACALL DELAY1
+                ACALL LINE2
+                MOV DPTR,#TEXT_F2
+                ACALL SEND
+                ACALL DELAY1
+                GOBACK:LJMP TRY_AGAIN1
+
+
+
+KEY_SCAN:NOP
+        MOV DPTR,#data1
+        MOV ROW,#11111110B
+        ACALL COL_CHECK
+        MOV ROW,#11111101B
+        ACALL COL_CHECK
+        MOV ROW,#11111011B
+        ACALL COL_CHECK
+        MOV ROW,#11110111B
+        ACALL COL_CHECK1
+        RET
+
+COL_CHECK: JNB P3.0,FOUND
+           INC DPTR
+			     JNB P3.1,FOUND
+           INC DPTR
+			     JNB P3.2,FOUND
+           INC DPTR
+			     JNB P3.3,FOUND
+           INC DPTR
+           RET
+			 
+COL_CHECK1: JNB P3.0,FOUND
+            INC DPTR
+			      JNB P3.1,FOUND
+            INC DPTR
+			      JNB P3.2,CP1
+			 CP1:LJMP CHECK_PASSWORD1
+          
+			JNB P3.3,CP
+			CP:LJMP CHECK_PASSWORD
+         RET
+          
+FOUND:CLR A
+MOVC A,@A+DPTR
+MOV @ R1,A
+INC R1
+MOV @R0,A
+INC R0
+MOV A,#2AH
+ACALL DATA_WRITE
+ACALL DELAY2
+LJMP AGAIN
+NEXT16:RET
+
+CHECK_PASSWORD1:ACALL CLRSCR
+                MOV DPTR,#CHKMSG1
+                ACALL SEND
+                ACALL DELAY1
+                MOV R3,#3d
+                MOV R1,#50h
+                MOV DPTR,#USERID
+                RPT1:CLR A
+                MOVC A,@A+DPTR
+                XRL A,@R1
+                JNZ FAIL1
+                INC R1
+                INC DPTR
+                DJNZ R3,RPT1
+                ACALL CLRSCR
+                ACALL LINE1
+                MOV DPTR,#TEXT_S3
+                ACALL SEND
+                ACALL LINE2
+                ACALL DELAY1
+                MOV R2,#6H
+                SJMP GOBACK1
+
+
+                FAIL1:MOV R3,#3d
+                MOV R1,#50h
+
+                MOV DPTR,#USERID1
+                RPT2:CLR A
+                MOVC A,@A+DPTR
+                XRL A,@R1
+                JNZ FAIL2
+                INC R1
+                INC DPTR
+                DJNZ R3,RPT2
+
+                ACALL CLRSCR
+                ACALL LINE1
+                MOV DPTR,#TEXT_S3
+                ACALL SEND
+                ACALL LINE2
+                ACALL DELAY1
+                MOV R2,#6H
+                SJMP GOBACK1
+
+
+                FAIL2:MOV R3,#3d
+                MOV R1,#50h
+
+                MOV DPTR,#USERID2
+                RPT3:CLR A
+                MOVC A,@A+DPTR
+                XRL A,@R1
+                JNZ FAIL3
+                INC R1
+                INC DPTR
+                DJNZ R3,RPT3
+
+                ACALL CLRSCR
+                ACALL LINE1
+                MOV DPTR,#TEXT_S3
+                ACALL SEND
+                ACALL LINE2
+                ACALL DELAY1
+                MOV R2,#6H
+                SJMP GOBACK1
+
+
+                FAIL3: ACALL CLRSCR 
+                ACALL LINE1
+                MOV DPTR,#TEXT_F4
+                ACALL SEND
+                ACALL DELAY1
+                ACALL DELAY1
+                LJMP TRY_AGAIN
+
+                GOBACK1:LJMP TRY_AGAIN1
+
+
+
+
+org 0A50H
+
+INIT_COMMANDS:  DB 0CH,01H,06H,80H,3CH,0   	
+	data1: db 31H,32H,33H,41H, 34H,35H,36H,42H, 37H,38H,39H,43H ,2AH,30H,0
+TEXT1: DB "PASSWORD BASED",0 
+TEXT2: DB "SECURITY SYSTEM",0 
+ENTER1: DB "AND PRESS # ",0
+ENTER2: DB " AND PRESS D ",0
+IPMSG: DB "GIVE 5 DIGITS",0
+IPMSG1: DB "GIVE USER ID",0
+	USE: DB "INPUT ID",0
+	USE1: DB "INPUT PASSWORD",0
+CHKMSG: DB "CHECKING PASSWORD",0
+CHKMSG1: DB "CHECKING ID",0	
+TEXT_S1: DB "ACCESS - GRANTED",0
+TEXT_S3: DB "CORRECT ID",0
+TEXT_S2: DB "DOOR OPENED",0
+TEXT_F1: DB "WRONG PASSWORD",0
+TEXT_F4: DB "WRONG ID",0
+TEXT_F2: DB "TRY AGAIN",0
+TEXT_F3: DB "ACCESS - DENIED",0
+TRIAL: DB "TRAIL REMAIN",0
+USERID: DB 41H,42H,43H,0	
+	USERID1: DB 42H,41H,43H,0
+		USERID2: DB 43H,41H,42H,0
+ORG 0A00H
+PASSW: DB 35h,35h,34h,31h,39h,0
+PASSW1: DB 31h,32h,33h,34h,35h,0
+PASSW2: DB 35h,34h,33h,32h,31h,0
+END
