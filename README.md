@@ -1,16 +1,15 @@
 # Electronic-code-lock-with-multiple-user
 
-Electronic code lock system using 8051 microcontroller,
-which provides control to the actuating the load. 
-It is a simple embedded system with input from the keyboard and the output being actuated
-accordingly.
-This system demonstrates a Password based electronic Lock System using 8051 Microcontroller,
-wherein once the correct code or password is entered, the lock is opened and the concerned person is allowed access to the secured area.
-Again, if another person arrives, it will ask to enter the password.
-If the password is wrong, then lock would remain closed, denying access to the person.
+Electronic code lock with multiple user ID and password system using 8051 microcontroller,
+which provides control to unlock the lock or door. 
+It uses embedded system with input from the keypad and the output can be unlocking lock or door.
+This system is a Password based electronic Lock System using 8051 Microcontroller,
+wherein once the correct ID is entered and then the code or password is entered, the lock is opened 
+Again, for the next user the ID and poassword is required to enter.
+If the password is wrong, then lock would remain closed, and the access will not be granted.
 
 
-The main component in the circuit is 8051 controller.
+
 In this project, a 4×4 Matrix Keypad is used to enter the password.
 The password which is entered is compared with the predefined password.
 First the ID of the user is entered  if the ID is correct then it will ask you to enter the password.
