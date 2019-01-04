@@ -5,7 +5,7 @@ which provides control to unlock the lock or door.
 It uses embedded system with input from the keypad and the output can be unlocking lock or door.
 This system is a Password based electronic Lock System using 8051 Microcontroller,
 wherein once the correct ID is entered and then the code or password is entered, the lock is opened 
-Again, for the next user the ID and poassword is required to enter.
+Again, for the next user the ID and password is required to enter.
 
 A 4×4 Matrix Keypad is used to enter the password,16x2 LCD is used for display,one Buzzer is used for security purpose,one motor or actuator is used.
 The password which is entered is compared with the predefined password.
